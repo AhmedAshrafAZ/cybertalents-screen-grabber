@@ -74,6 +74,8 @@ When `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` is set to `true`, puppeteer skips downlo
 
 This script is mainly based on web scraping 🕷🕸 and DOM manipulation. Here is a demo of its use.
 
+https://user-images.githubusercontent.com/35408287/129457463-9e41d0f6-0e7b-4fb3-b115-52a6a45599d1.mp4
+
 ## Contribution 👀
 
 This script is created for personal use but made public so if anyone wants to use it can use it. You might face some bugs or not handled errors, you can fix it and create a pull request or you can post a new issue in the issues section and I will fix it whenever I have the time.
