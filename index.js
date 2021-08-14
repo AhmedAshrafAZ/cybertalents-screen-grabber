@@ -9,11 +9,10 @@ const userAuthData = {
 };
 
 const initBrowser = async () => {
-  const puppOptions = {
+  const browser = await puppeteer.launch({
     headless: true,
     timeout: 100000,
-  };
-  const browser = await puppeteer.launch(puppOptions);
+  });
   const page = await browser.newPage();
   page.setViewport({
     height: 720,
@@ -39,16 +38,19 @@ const performLogin = async (page) => {
 };
 
 (async () => {
-  console.log('[+] Started');
+  print('[-] Starting Browser...', false);
   const { browser, page } = await initBrowser();
+  print(`\r[+] Browser Started\n`, true);
   print(`[-] Authenticating...`, false);
   await performLogin(page);
   print(`\r[+] Authenticated\n`, true);
   const availableCourses = await getAvailableCourses(page);
   let selectedCourses = await getAnswers(availableCourses);
-  print(`[-] Fetching Lessons...`, false);
+  print(`[-] Fetching Lessons of each course...`, false);
   selectedCourses = await getLessons(page, selectedCourses);
-  print(`\r[+] Fetched Lessons\n`, true);
+  print(`\r[+] Lessons Fetched\n`, true);
   await saveLessons(page, selectedCourses);
   await browser.close();
+  print(`\r[+] Downloaded and saved to "CyberTalentsLearn" folder\n`, true);
+  process.exit();
 })();

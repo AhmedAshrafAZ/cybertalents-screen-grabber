@@ -36,6 +36,7 @@ const getAnswers = async (availableCourses) => {
         }
         return true;
       },
+      loop: false,
     },
   ]);
   return answers.courses.map((course) => {
@@ -48,7 +49,7 @@ const getAnswers = async (availableCourses) => {
 
 const loadingBar = new cliProgress.MultiBar(
   {
-    format: `Capturing ({value}/{total}): {title} | [{bar}] | ETA: {eta}m `,
+    format: `Capturing ({value}/{total}): {title} | [{bar}] | ETA: {eta}s `,
     barCompleteChar: '#',
     barIncompleteChar: '.',
     hideCursor: true,
@@ -82,7 +83,7 @@ const getLessons = async (page, courses) => {
 const saveLessons = async (page, courses) => {
   for (let index = 0; index < courses.length; index++) {
     const coursePath = `${__dirname}${fileSeparator()}CyberTalentsLearn${fileSeparator()}${index + 1}- ${courses[index].name}${fileSeparator()}`;
-    const lessonsBar = loadingBar.create(courses[index].lessons.length - 1, 0, {
+    const lessonsBar = loadingBar.create(courses[index].lessons.length + 1, 1, {
       title: courses[index].name,
     });
     for (let i = 0; i < courses[index].lessons.length; i++) {
@@ -106,6 +107,7 @@ const saveLessons = async (page, courses) => {
     }
     loadingBar.remove(lessonsBar);
   }
+  loadingBar.stop();
 };
 
 const getChallenges = async (page, url) => {
@@ -128,7 +130,7 @@ const getChallenges = async (page, url) => {
 const saveChallenges = async (page, lesson, lessonPath) => {
   const challenges = await getChallenges(page, `${lesson.url}/challenges`);
   fs.mkdirSync(`${lessonPath}challenges${fileSeparator()}`, { recursive: true });
-  const challengesBar = loadingBar.create(challenges.length - 1, 0, {
+  const challengesBar = loadingBar.create(challenges.length + 1, 1, {
     title: 'challenge',
   });
   for (let i = 0; i < challenges.length; i++) {
