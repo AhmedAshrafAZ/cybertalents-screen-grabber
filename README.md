@@ -67,7 +67,7 @@ When `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` is set to `true`, puppeteer skips downlo
 
 6.  Run the script and let the magic begin 🎩🎩🔥🔥
     ```
-    npm start
+    node index.js
     ```
 
 ## Showcase 🤓
