@@ -3,6 +3,11 @@ require('dotenv').config();
 const { getAvailableCourses, getAnswers, getLessons, saveLessons } = require('./scraper.js');
 const puppeteer = require('puppeteer');
 
+const print = (text, clearLine) => {
+  if (clearLine) process.stdout.clearLine();
+  process.stdout.write(text);
+};
+
 const userAuthData = {
   loginfield: process.env.CT_USERNAME,
   password: process.env.CT_PASSWORD,
@@ -39,8 +44,11 @@ const performLogin = async (page) => {
 };
 
 (async () => {
+  print(`[+] Starting...\n`, false);
   const page = await initBrowser();
+  print(`[-] Authenticating...`, false);
   await performLogin(page);
+  print(`\r[+] Authenticated\n`, true);
   const availableCourses = await getAvailableCourses(page);
   let selectedCourses = await getAnswers(availableCourses);
   selectedCourses = await getLessons(page, selectedCourses);
