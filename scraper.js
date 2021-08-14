@@ -9,9 +9,9 @@ const fileSeparator = () => {
 const getAvailableCourses = async (page) => {
   return await page.evaluate(() => {
     const courses = [];
-    document.querySelectorAll('[class="card-cat__title font-medium text-2xl w-3/4"]').forEach((element) => {
-      const parent = element.parentElement.parentElement.parentElement;
-      courses.push({ name: element.textContent, url: parent.children[parent.childElementCount - 1].children[1].href });
+    document.querySelectorAll('.course-card > .card-body > .card-title').forEach((element) => {
+      const parent = element.parentElement.parentElement;
+      courses.push({ name: element.textContent.trim(), url: parent.children[parent.childElementCount - 1].children[1].href });
     });
     return courses;
   });
