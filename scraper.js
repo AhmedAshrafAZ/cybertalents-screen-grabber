@@ -54,6 +54,7 @@ const loadingBar = new cliProgress.MultiBar(
     barIncompleteChar: '.',
     hideCursor: true,
     clearOnComplete: true,
+    eta_formatted: 300,
   },
   cliProgress.Presets.legacy
 );
@@ -82,9 +83,10 @@ const getLessons = async (page, courses) => {
 
 const saveLessons = async (page, courses) => {
   for (let index = 0; index < courses.length; index++) {
-    const coursePath = `${__dirname}${fileSeparator()}CyberTalentsLearn${fileSeparator()}${index + 1}- ${courses[index].name}${fileSeparator()}`;
+    const coursePath = `${__dirname}${fileSeparator()}CyberTalentsLearn${fileSeparator()}${courses[index].name}${fileSeparator()}`;
     const lessonsBar = loadingBar.create(courses[index].lessons.length + 1, 1, {
       title: courses[index].name,
+      eta_formatted: 120,
     });
     for (let i = 0; i < courses[index].lessons.length; i++) {
       await page.goto(courses[index].lessons[i].url, {
@@ -132,6 +134,7 @@ const saveChallenges = async (page, lesson, lessonPath) => {
   fs.mkdirSync(`${lessonPath}challenges${fileSeparator()}`, { recursive: true });
   const challengesBar = loadingBar.create(challenges.length + 1, 1, {
     title: 'challenge',
+    eta_formatted: 30,
   });
   for (let i = 0; i < challenges.length; i++) {
     const challengePath = `${lessonPath}challenges${fileSeparator()}[${challenges[i].level.substring(challenges[i].level.indexOf(':') + 1).trim()}] ${challenges[i].name}${fileSeparator()}`;
