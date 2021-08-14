@@ -1,9 +1,15 @@
 'use strict';
 const inquirer = require('inquirer');
 const fs = require('fs');
+const cliProgress = require('cli-progress');
 const machine_type = process.platform;
 const fileSeparator = () => {
   return machine_type === 'win32' ? '\\' : '/';
+};
+
+const print = (text, clearLine) => {
+  if (clearLine) process.stdout.clearLine();
+  process.stdout.write(text);
 };
 
 const getAvailableCourses = async (page) => {
@@ -40,6 +46,17 @@ const getAnswers = async (availableCourses) => {
   });
 };
 
+const loadingBar = new cliProgress.MultiBar(
+  {
+    format: `Capturing ({value}/{total}): {title} | [{bar}] | ETA: {eta}m `,
+    barCompleteChar: '#',
+    barIncompleteChar: '.',
+    hideCursor: true,
+    clearOnComplete: true,
+  },
+  cliProgress.Presets.legacy
+);
+
 const getLessons = async (page, courses) => {
   for (let index = 0; index < courses.length; index++) {
     await page.goto(courses[index].url, {
@@ -65,12 +82,14 @@ const getLessons = async (page, courses) => {
 const saveLessons = async (page, courses) => {
   for (let index = 0; index < courses.length; index++) {
     const coursePath = `${__dirname}${fileSeparator()}CyberTalentsLearn${fileSeparator()}${index + 1}- ${courses[index].name}${fileSeparator()}`;
+    const lessonsBar = loadingBar.create(courses[index].lessons.length - 1, 0, {
+      title: courses[index].name,
+    });
     for (let i = 0; i < courses[index].lessons.length; i++) {
       await page.goto(courses[index].lessons[i].url, {
         waitUntil: 'networkidle2',
       });
       const lessonName = courses[index].lessons[i].name;
-
       const lessonPath = `${coursePath}${lessonName}${fileSeparator()}`;
       fs.mkdirSync(lessonPath, { recursive: true });
       await page.evaluate(() => {
@@ -83,7 +102,9 @@ const saveLessons = async (page, courses) => {
         fullPage: true,
       });
       await saveChallenges(page, courses[index].lessons[i], lessonPath);
+      lessonsBar.increment();
     }
+    loadingBar.remove(lessonsBar);
   }
 };
 
@@ -107,6 +128,9 @@ const getChallenges = async (page, url) => {
 const saveChallenges = async (page, lesson, lessonPath) => {
   const challenges = await getChallenges(page, `${lesson.url}/challenges`);
   fs.mkdirSync(`${lessonPath}challenges${fileSeparator()}`, { recursive: true });
+  const challengesBar = loadingBar.create(challenges.length - 1, 0, {
+    title: 'challenge',
+  });
   for (let i = 0; i < challenges.length; i++) {
     const challengePath = `${lessonPath}challenges${fileSeparator()}[${challenges[i].level.substring(challenges[i].level.indexOf(':') + 1).trim()}] ${challenges[i].name}${fileSeparator()}`;
     fs.mkdirSync(challengePath, { recursive: true });
@@ -140,7 +164,9 @@ const saveChallenges = async (page, lesson, lessonPath) => {
       path: `${challengePath}writeup.png`,
       fullPage: true,
     });
+    challengesBar.increment();
   }
+  loadingBar.remove(challengesBar);
 };
 
-module.exports = { getAvailableCourses, getAnswers, getLessons, saveLessons, getChallenges, saveChallenges };
+module.exports = { print, getAvailableCourses, getAnswers, getLessons, saveLessons, getChallenges, saveChallenges };

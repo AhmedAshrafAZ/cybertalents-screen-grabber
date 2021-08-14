@@ -1,12 +1,7 @@
 'use strict';
 require('dotenv').config();
-const { getAvailableCourses, getAnswers, getLessons, saveLessons } = require('./scraper.js');
+const { print, getAvailableCourses, getAnswers, getLessons, saveLessons } = require('./scraper.js');
 const puppeteer = require('puppeteer');
-
-const print = (text, clearLine) => {
-  if (clearLine) process.stdout.clearLine();
-  process.stdout.write(text);
-};
 
 const userAuthData = {
   loginfield: process.env.CT_USERNAME,
@@ -29,7 +24,7 @@ const initBrowser = async () => {
     waitUntil: 'networkidle2',
   });
   page.setDefaultNavigationTimeout(0);
-  return page;
+  return { browser, page };
 };
 
 const performLogin = async (page) => {
@@ -44,14 +39,16 @@ const performLogin = async (page) => {
 };
 
 (async () => {
-  print(`[+] Starting...\n`, false);
-  const page = await initBrowser();
+  console.log('[+] Started');
+  const { browser, page } = await initBrowser();
   print(`[-] Authenticating...`, false);
   await performLogin(page);
   print(`\r[+] Authenticated\n`, true);
   const availableCourses = await getAvailableCourses(page);
   let selectedCourses = await getAnswers(availableCourses);
+  print(`[-] Fetching Lessons...`, false);
   selectedCourses = await getLessons(page, selectedCourses);
+  print(`\r[+] Fetched Lessons\n`, true);
   await saveLessons(page, selectedCourses);
   await browser.close();
 })();
