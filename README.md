@@ -8,7 +8,7 @@
 
 This script is created to automate downloading the content from the [Cyber Talents](https://cybertalents.com/) platform. It fetches the courses in [learn](https://cybertalents.com/learn) section, creates a folder for each course, fetches the lessons of each course. Then screenshots each challenge with its writeup and save it in the corresponding folder 🔥🔥
 
-## Skip chromium installation
+## Skip chromium installation "If you have chromium installed already"
 
 ```bash
 export CHROMIUM_EXECUTABLE_PATH=$(which chromium)
